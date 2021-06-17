@@ -1,0 +1,1 @@
+from myCripto import app
