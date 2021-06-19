@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>myCripto</title>
     <link rel="stylesheet" href="/static/css/milligram.css">
-    <link rel="stylesheet" href="/static/css/styles.css">
     <script src="/static/js/spa.js"></script>
 </head>
 <body>
@@ -28,9 +27,48 @@
                 <tbody></tbody>
             </table>
         </div>
-        <div class="detail-movimiento">
-            Aquí irá lo de From, To, Q ...
-        </div>
     </section>
+    <hr>
+    <div class="detail-movimiento container">
+        <form>
+            <div class="row" >
+                <input type="hidden" id="idMovimiento">
+                <div class="column column-33">
+                    <label for="moneda_from">From:</label>
+                    <select name="moneda_from" id="moneda_from">
+                        <option value="EUR">EUR</option>
+                        <option value="BTC">BTC</option>
+                        <option value="ETH">ETH</option>
+                        <option value="LTC">LTC</option>
+                    </select>
+                </div>
+                <div class="column column-33">
+                    <label for="moneda_to">To:</label>
+                    <select name="moneda_to" id="moneda_to">
+                        <option value="EUR">EUR</option>
+                        <option value="BTC">BTC</option>
+                        <option value="ETH">ETH</option>
+                        <option value="LTC">LTC</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column column-33">
+                    <label for="cantidad_from">Q:</label>
+                    <input type="number" name="cantidad_from" id="cantidad_from" step="any">
+                </div>
+                <div class="column column-33">
+                    <label for="cantidad_to">Q:</label>
+                    <input type="number" name="cantidad_to" id="cantidad_to" step="any">
+                </div>
+            </div>
+            <div class="row">
+                <div class="column column-75">
+                    <button class="float-right" id="aceptar" >Ok</button>
+                </div>
+            </div>
+        </form>
+    </div>
+<footer>&copy 2021 - Todos los derechos reservados</footer>
 </body>
 </html>

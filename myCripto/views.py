@@ -20,4 +20,29 @@ def movimientosAPI():
     except sqlite3.Error as e:
         return jsonify({'status': 'fail', 'mensaje': str(e)}) # str(e) = error pasado a cadena
 
+@app.route('/api/v1/movimiento/<int:id>', methods=['GET'])
+@app.route('/api/v1/movimiento', methods=['POST'])
+def detalleMovimiento(id=None):
+    try: 
+        if request.method in ('GET'): 
+            movimiento = dbManager.consultaUnaSQL("SELECT * FROM movimientos WHERE id = ?", [id])
+            if movimiento:
+                return jsonify({
+                    # fijamos el diccionario de salid
+                    "status": "success",
+                    "movimiento": movimiento
+                })
+            else: 
+                return jsonify({"status": "fail", "mensaje": "movimiento no encontrado"}), HTTPStatus.NOT_FOUND
+        
+        if request.method == 'POST': 
+            dbManager.modificaTablaSQL("""
+                INSERT INTO movimientos 
+                        (moneda_from, cantidad_from, moneda_to, cantidad_to)
+                VALUES (:moneda_from, :cantidad_from, :moneda_to, :cantidad_to)
+                """, request.json)
+            
+            return jsonify({"status": "success", "mensaje": "registro creado"}), HTTPStatus.CREATED
 
+    except sqlite3.Error as e: 
+        return jsonify({"status": "fail", "mensaje": "Error en base de datos: {}".format(e)}), HTTPStatus.BAD_REQUEST
