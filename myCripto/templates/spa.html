@@ -6,26 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>myCripto</title>
     <link rel="stylesheet" href="/static/css/milligram.css">
+    <link rel="stylesheet" href="/static/css/styles.css">
     <script src="/static/js/spa.js"></script>
 </head>
 <body>
     <header>myCripto</header>
     <section class="container" id="principal">
         <h1>Control de movimientos</h1>
-        <div class="lista-movimientos">
-            <table class="tabla-movimientos">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Hora</th>
-                        <th>From</th>
-                        <th>Cantidad</th>
-                        <th>To</th>
-                        <th>Cantidad</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div class="lista-movimientos"> 
+                <div class="row" >
+                    <table class="tabla-movimientos column">
+                        <thead class="td">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>From</th>
+                                <th>Cantidad</th>
+                                <th>To</th>
+                                <th>Cantidad</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <div class="column column-20">
+                        <label for="invertido">Invertido:</label>
+                        <label for="valor">Valor........:</label>
+                        <label for="resultado">Resultado:</label>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
     <hr>
@@ -33,8 +42,8 @@
         <form>
             <div class="row" >
                 <input type="hidden" id="idMovimiento">
-                <div class="column column-33">
-                    <label for="moneda_from">From:</label>
+                <div class="column column-25 column-offset-5">
+                    <label for="moneda_from">From:</label> 
                     <select name="moneda_from" id="moneda_from">
                         <option value="EUR">EUR</option>
                         <option value="BTC">BTC</option>
@@ -42,8 +51,8 @@
                         <option value="LTC">LTC</option>
                     </select>
                 </div>
-                <div class="column column-33">
-                    <label for="moneda_to">To:</label>
+                <div class="column column-25">
+                    <label for="moneda_to">To:</label> 
                     <select name="moneda_to" id="moneda_to">
                         <option value="EUR">EUR</option>
                         <option value="BTC">BTC</option>
@@ -53,18 +62,20 @@
                 </div>
             </div>
             <div class="row">
-                <div class="column column-33">
+                <div class="column column-25 column-offset-5">
                     <label for="cantidad_from">Q:</label>
                     <input type="number" name="cantidad_from" id="cantidad_from" step="any">
+                    <button id="cambio" >Calc</button>
                 </div>
-                <div class="column column-33">
-                    <label for="cantidad_to">Q:</label>
-                    <input type="number" name="cantidad_to" id="cantidad_to" step="any">
+                <div class="column column-25">
+                    <label for="cantidad_to">Q:</label> 
+                    <input type="text" name="cantidad_to" id="cantidad_to" readonly>
                 </div>
             </div>
             <div class="row">
                 <div class="column column-75">
                     <button class="float-right" id="aceptar" >Ok</button>
+                    <a href="/" class="float-right">Reset</a>
                 </div>
             </div>
         </form>

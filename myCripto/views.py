@@ -38,8 +38,8 @@ def detalleMovimiento(id=None):
         if request.method == 'POST': 
             dbManager.modificaTablaSQL("""
                 INSERT INTO movimientos 
-                        (moneda_from, cantidad_from, moneda_to, cantidad_to)
-                VALUES (:moneda_from, :cantidad_from, :moneda_to, :cantidad_to)
+                        (date, time, moneda_from, cantidad_from, moneda_to)
+                VALUES (:date, :time, :moneda_from, :cantidad_from, :moneda_to)
                 """, request.json)
             
             return jsonify({"status": "success", "mensaje": "registro creado"}), HTTPStatus.CREATED

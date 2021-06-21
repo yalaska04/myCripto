@@ -1,0 +1,15 @@
+td {
+    width: 115px;
+}
+
+.row .column.column-offset-5 {
+    margin-left: 5%;
+  }
+
+br {
+    display: block; /* makes it have a width */
+    content: ""; /* clears default height */
+    margin-top: 6.7%; /* change this to whatever height you want it */
+}
+
+
