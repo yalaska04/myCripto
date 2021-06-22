@@ -38,7 +38,7 @@
         </div>
     </section>
     <hr>
-    <div class="detail-movimiento container">
+    <div class="detail-movimiento container" id="formulario">
         <form>
             <div class="row" >
                 <input type="hidden" id="idMovimiento">
@@ -49,6 +49,15 @@
                         <option value="BTC">BTC</option>
                         <option value="ETH">ETH</option>
                         <option value="LTC">LTC</option>
+                        <option value="BNB">BNB</option>
+                        <option value="EOS">EOS</option>
+                        <option value="XLM">XLM</option>
+                        <option value="TRX">TRX</option>
+                        <option value="XRP">XRP</option>
+                        <option value="BCH">BCH</option>
+                        <option value="USDT">USDT</option>
+                        <option value="BSV">BSV</option>
+                        <option value="ADA">ADA</option>
                     </select>
                 </div>
                 <div class="column column-25">
@@ -58,6 +67,15 @@
                         <option value="BTC">BTC</option>
                         <option value="ETH">ETH</option>
                         <option value="LTC">LTC</option>
+                        <option value="BNB">BNB</option>
+                        <option value="EOS">EOS</option>
+                        <option value="XLM">XLM</option>
+                        <option value="TRX">TRX</option>
+                        <option value="XRP">XRP</option>
+                        <option value="BCH">BCH</option>
+                        <option value="USDT">USDT</option>
+                        <option value="BSV">BSV</option>
+                        <option value="ADA">ADA</option>
                     </select>
                 </div>
             </div>
@@ -65,11 +83,11 @@
                 <div class="column column-25 column-offset-5">
                     <label for="cantidad_from">Q:</label>
                     <input type="number" name="cantidad_from" id="cantidad_from" step="any">
-                    <button id="cambio" >Calc</button>
+                    <button id="cambio" >Calcular</button>
                 </div>
                 <div class="column column-25">
                     <label for="cantidad_to">Q:</label> 
-                    <input type="text" name="cantidad_to" id="cantidad_to" readonly>
+                    <input type="text" name="cantidad_to" id="cantidad_to" value ="" readonly>
                 </div>
             </div>
             <div class="row">

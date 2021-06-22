@@ -2,6 +2,25 @@
 let losMovimientos // creo variable
 xhr = new XMLHttpRequest()
 
+function gestionaRespuestaApiCoinMarket() {
+    if (this.readyState === 4 && (this.status === 200 || this.status === 201)) {
+        const respuesta = JSON.parse(this.responseText)
+
+        if (respuesta.status.error_code !== 0) {
+            alert("Se ha producido un error en acceso a servidor "+ respuesta.status.error_message)
+            return
+        }
+
+        // alert("todo ha ido bien") 
+        
+        const moneda_to = document.querySelector("#moneda_to").value
+        const cantidad_to = respuesta.data.quote[moneda_to].price // cantidad en la moneda deseada
+        document.getElementById('cantidad_to').value = cantidad_to.toFixed(2)
+
+        }
+}
+
+
 function recibeRespuesta() { // para hacer el onload solo cuando hagamos petición
     if (this.readyState === 4 && (this.status === 200 || this.status === 201)) {
         const respuesta = JSON.parse(this.responseText)
@@ -15,25 +34,6 @@ function recibeRespuesta() { // para hacer el onload solo cuando hagamos petici�
 
         llamaApiMovimientos() // muéstrame los movimientos 
     }
-}
-
-
-function detallaMovimiento(id) {
-// función que al pulsar una fila te captura los atributos y los plasma en el formulario
-    let movimiento // recupero la posición del elemento que quiero a través de la id 
-    for (let i=0; i<losMovimientos.length; i++) {
-        const item = losMovimientos[i]
-        if (item.id == id ) {
-            movimiento = item
-            break
-        }
-    }
-    
-    if (!movimiento) return 
-    document.querySelector("#idMovimiento").value = id // para guardar el id 
-    document.querySelector("#moneda_from").value = movimiento.moneda_from // apunta a id y le asigno un valor
-    document.querySelector("#cantidad_from").value = movimiento.cantidad_from.toFixed(2)
-    document.querySelector("#moneda_to").value = movimiento.moneda_to
 }
 
 
@@ -54,10 +54,6 @@ function muestraMovimientos() { // Recibe la respuesta (URL) de llamadaAPI
             const movimiento = respuesta.data[i]
             const fila = document.createElement("tr")
 
-            fila.addEventListener("click", () => { // El () hace que se ejecute la función solo cuando se haga click, sin el se ejecutaría cuando se lea la linea
-                detallaMovimiento(movimiento.id)
-            })
-
             const dentro = `
                 <td>${movimiento.date}</td>
                 <td>${movimiento.time}</td>
@@ -71,6 +67,7 @@ function muestraMovimientos() { // Recibe la respuesta (URL) de llamadaAPI
         }
     }
 }
+
 
 function validar(movimiento) {
     if (!movimiento.moneda_from) {
@@ -96,17 +93,21 @@ function validar(movimiento) {
     return true
 }
 
+
 function llamaApiMovimientos() {
     xhr.open('GET', 'http://127.0.0.1:5000/api/v1/movimientos', true) // crea petición GET la URL
     xhr.onload = muestraMovimientos // func. que recibe la URL (API) enviada
     xhr.send() // envío la petición GET la URL 
 }
 
+
 function generateTime() {
     var time = new Date()
     time = time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds()
     return time
 }
+
+
 function generateDate() {
 
     var today = new Date() // objeto date que contiene fecha y hora
@@ -118,6 +119,7 @@ function generateDate() {
     return today
 }
 
+
 function capturaFormularioMovimiento() {
     
     const movimiento = {}
@@ -127,11 +129,10 @@ function capturaFormularioMovimiento() {
     movimiento.moneda_from = document.querySelector("#moneda_from").value
     movimiento.moneda_to = document.querySelector("#moneda_to").value
     movimiento.cantidad_from = document.querySelector("#cantidad_from").value
-    // movimiento.cantidad_to = document.querySelector("#cantidad_to").value
+    movimiento.cantidad_to = document.querySelector("#cantidad_to").value
     
     return movimiento
 }
-
 
 
 function llamaApiCreaMovimiento(ev){
@@ -153,6 +154,20 @@ function llamaApiCreaMovimiento(ev){
 }
 
 
+function llamaApiCoinMarket(ev){
+    
+    ev.preventDefault() 
+
+    const movimiento = capturaFormularioMovimiento() 
+
+    xhr.open('GET', `http://127.0.0.1:5000/api/v1/par/${movimiento.moneda_from}/${movimiento.moneda_to}/${movimiento.cantidad_from}`)
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    xhr.send()
+    xhr.onload = gestionaRespuestaApiCoinMarket
+    
+
+}
+
 window.onload = function() {
 // Lo que haya dentro de esta función se ejecutará cuando la pag haya terminado de cargarse
 // La usamos para evitar que el JS se ejecute antes de que la html se renderiza --> daría ERROR
@@ -160,5 +175,8 @@ window.onload = function() {
     
     document.querySelector("#aceptar")
         .addEventListener("click", llamaApiCreaMovimiento) // recoge el evento "click" al pulsar ok
+    
+    document.querySelector("#cambio")
+        .addEventListener("click", llamaApiCoinMarket)
            
 }
