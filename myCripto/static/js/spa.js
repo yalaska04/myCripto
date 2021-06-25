@@ -10,8 +10,6 @@ function gestionaRespuestaApiCoinMarket() {
             alert("Se ha producido un error en acceso a servidor "+ respuesta.status.error_message)
             return
         }
-
-        // alert("todo ha ido bien") 
         
         const moneda_to = document.querySelector("#moneda_to").value
         const cantidad_to = respuesta.data.quote[moneda_to].price // cantidad en la moneda deseada
@@ -173,10 +171,10 @@ window.onload = function() {
 // La usamos para evitar que el JS se ejecute antes de que la html se renderiza --> daría ERROR
     llamaApiMovimientos()
     
-    document.querySelector("#aceptar")
+    document.querySelector("#guardar")
         .addEventListener("click", llamaApiCreaMovimiento) // recoge el evento "click" al pulsar ok
     
-    document.querySelector("#cambio")
+    document.querySelector("#calcular")
         .addEventListener("click", llamaApiCoinMarket)
            
 }

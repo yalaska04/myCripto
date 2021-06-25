@@ -14,7 +14,7 @@
     <section class="container" id="principal">
         <h1>Control de movimientos</h1>
             <div class="lista-movimientos"> 
-                <div class="row" >
+                <div class="row" id="tabla">
                     <table class="tabla-movimientos column">
                         <thead class="td">
                             <tr>
@@ -83,16 +83,13 @@
                 <div class="column column-25 column-offset-5">
                     <label for="cantidad_from">Q:</label>
                     <input type="number" name="cantidad_from" id="cantidad_from" step="any">
-                    <button id="cambio" >Calcular</button>
+                    <button id="calcular" >Calcular</button>
                 </div>
                 <div class="column column-25">
                     <label for="cantidad_to">Q:</label> 
                     <input type="text" name="cantidad_to" id="cantidad_to" value ="" readonly>
-                </div>
-            </div>
-            <div class="row">
-                <div class="column column-75">
-                    <button class="float-right" id="aceptar" >Ok</button>
+                    <button class="float-right" id="guardar" >Guardar</button>
+                    <br>
                     <a href="/" class="float-right">Reset</a>
                 </div>
             </div>
