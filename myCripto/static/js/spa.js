@@ -2,19 +2,46 @@
 let losMovimientos // creo variable
 xhr = new XMLHttpRequest()
 
+function gestionaRespuestaApiStatus() {
+    if (this.readyState === 4 && this.status === 200) {
+        const respuesta = JSON.parse(this.responseText)
+
+        if (respuesta.status !== 'success') {
+            alert("Error en servidor: "+ respuesta.mensaje)
+            return
+        }
+
+    const invertido = respuesta.data.invertido
+    const valor_actual = respuesta.data.valor_actual
+    const resultado = valor_actual - invertido
+
+    document.getElementById('invertido').value = invertido.toFixed(2)
+    document.getElementById('valor_actual').value = valor_actual.toFixed(2)
+    if (parseFloat(resultado) < 0) {
+        document.getElementById('resultado').style = "color: #ff0000;"
+        document.getElementById('resultado').value = resultado.toFixed(2)
+    } else {document.getElementById('resultado').value = resultado.toFixed(2)}
+
+    }
+}
+
 function gestionaRespuestaApiCoinMarket() {
     if (this.readyState === 4 && (this.status === 200 || this.status === 201)) {
         const respuesta = JSON.parse(this.responseText)
 
         if (respuesta.status.error_code !== 0) {
-            alert("Se ha producido un error en acceso a servidor "+ respuesta.status.error_message)
+            alert("Error en servidor: "+ respuesta.status.error_message)
             return
         }
         
         const moneda_to = document.querySelector("#moneda_to").value
         const cantidad_to = respuesta.data.quote[moneda_to].price // cantidad en la moneda deseada
-        document.getElementById('cantidad_to').value = cantidad_to.toFixed(2)
-
+        if (moneda_to !== 'EUR') {
+            document.getElementById('cantidad_to').value = cantidad_to.toFixed(8)
+        } else {
+            document.getElementById('cantidad_to').value = cantidad_to.toFixed(2)
+        }
+        
         }
 }
 
@@ -24,11 +51,9 @@ function recibeRespuesta() { // para hacer el onload solo cuando hagamos petici�
         const respuesta = JSON.parse(this.responseText)
 
         if (respuesta.status !== 'success') {
-            alert("Se ha producido un error en acceso a servidor "+ respuesta.mensaje)
+            alert("Error en servidor: "+ respuesta.mensaje)
             return
         }
-
-        alert(respuesta.mensaje)
 
         llamaApiMovimientos() // muéstrame los movimientos 
     }
@@ -40,7 +65,7 @@ function muestraMovimientos() { // Recibe la respuesta (URL) de llamadaAPI
         const respuesta = JSON.parse(this.responseText) // Pasa de string a objeto JSON (respuesta es un objeto)
 
         if (respuesta.status !== 'success'){
-            alert('Se ha producido un error en la consulta de movimientos')
+            alert('Error en servidor: ' + respuesta.mensaje)
             return 
         }
 
@@ -142,8 +167,6 @@ function llamaApiCreaMovimiento(ev){
         return
     }
 
-    // 
-
     id = document.querySelector("#idMovimiento").value
     xhr.open("POST", `http://127.0.0.1:5000/api/v1/movimiento`, true)
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8") // meto en la cabecera un json para que views sepa lo que esperar
@@ -166,15 +189,45 @@ function llamaApiCoinMarket(ev){
 
 }
 
+function llamaApiStatus(ev){
+    
+    ev.preventDefault() 
+    
+    xhr.open('GET', 'http://127.0.0.1:5000/api/v1/status', true) 
+    xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+    xhr.send()
+    xhr.onload = gestionaRespuestaApiStatus 
+     
+}
+
+function disableBtnFrom() {
+    var x = document.getElementById("moneda_to").selectedIndex;
+    document.getElementById("moneda_from").options[x].disabled = true;
+
+}
+
+function disableBtnTo() {
+    var x = document.getElementById("moneda_from").selectedIndex;
+    document.getElementById("moneda_to").options[x].disabled = true;
+}
+
 window.onload = function() {
 // Lo que haya dentro de esta función se ejecutará cuando la pag haya terminado de cargarse
 // La usamos para evitar que el JS se ejecute antes de que la html se renderiza --> daría ERROR
     llamaApiMovimientos()
+
+    document.querySelector("#moneda_to")
+        .addEventListener("change", disableBtnFrom) 
     
+    document.querySelector("#moneda_from")
+        .addEventListener("change", disableBtnTo) 
+        
     document.querySelector("#guardar")
         .addEventListener("click", llamaApiCreaMovimiento) // recoge el evento "click" al pulsar ok
     
     document.querySelector("#calcular")
         .addEventListener("click", llamaApiCoinMarket)
-           
+    
+    document.querySelector("#actualizar")
+        .addEventListener("click", llamaApiStatus)
 }

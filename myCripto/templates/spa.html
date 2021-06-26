@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>myCripto</title>
+    <title>myCrypto</title>
     <link rel="stylesheet" href="/static/css/milligram.css">
     <link rel="stylesheet" href="/static/css/styles.css">
     <script src="/static/js/spa.js"></script>
 </head>
 <body>
-    <header>myCripto</header>
+    <header>myCrypto</header>
     <section class="container" id="principal">
         <h1>Control de movimientos</h1>
             <div class="lista-movimientos"> 
@@ -29,22 +29,27 @@
                         <tbody></tbody>
                     </table>
                     <div class="column column-20">
-                        <label for="invertido">Invertido:</label>
-                        <label for="valor">Valor........:</label>
-                        <label for="resultado">Resultado:</label>
+                        <label for="invertido">Invertido (€):</label>
+                        <input type="text" name="invertido" id="invertido" value ="" readonly>
+                        <label for="valor_actual">Valor Actual (€):</label>
+                        <input type="text" name="valor_actual" id="valor_actual" value ="" readonly>
+                        <label for="resultado">Resultado (€):</label>
+                        <input type="text" name="resultado" id="resultado" value ="" style="color: #000000;" readonly>
+                        <button id="actualizar" class="float-right">Actualizar</button>
                     </div>
                 </div>
             </div>
         </div>
     </section>
     <hr>
-    <div class="detail-movimiento container" id="formulario">
+    <div class="detail-movimiento container">
         <form>
             <div class="row" >
                 <input type="hidden" id="idMovimiento">
                 <div class="column column-25 column-offset-5">
                     <label for="moneda_from">From:</label> 
-                    <select name="moneda_from" id="moneda_from">
+                    <select name="moneda_from" id="moneda_from" onchange="disableBtnTo()">
+                        <option value=""></option>
                         <option value="EUR">EUR</option>
                         <option value="BTC">BTC</option>
                         <option value="ETH">ETH</option>
@@ -62,7 +67,8 @@
                 </div>
                 <div class="column column-25">
                     <label for="moneda_to">To:</label> 
-                    <select name="moneda_to" id="moneda_to">
+                    <select name="moneda_to" id="moneda_to" onchange="disableBtnFrom()">
+                        <option value=""></option>
                         <option value="EUR">EUR</option>
                         <option value="BTC">BTC</option>
                         <option value="ETH">ETH</option>
