@@ -88,6 +88,7 @@ function muestraMovimientos() { // Recibe la respuesta (URL) de llamadaAPI
             fila.innerHTML = dentro
             tbody.appendChild(fila)
         }
+        llamaApiStatus()
     }
 }
 
@@ -189,9 +190,7 @@ function llamaApiCoinMarket(ev){
 
 }
 
-function llamaApiStatus(ev){
-    
-    ev.preventDefault() 
+function llamaApiStatus(){
     
     xhr.open('GET', 'http://127.0.0.1:5000/api/v1/status', true) 
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")

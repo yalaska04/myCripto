@@ -7,7 +7,7 @@ import sqlite3
 import requests
 import json
 
-divisas = ['EUR', 'BTC', 'ETH', 'LTC', 'BNB', 'EOS', 'XLM',
+criptoMonedas = ['BTC', 'ETH', 'LTC', 'BNB', 'EOS', 'XLM',
              'TRX', 'XRP', 'BCH', 'USDT', 'BSV', 'ADA']
 
 dbManager = DBmanager(app.config.get('DATABASE'))
@@ -21,17 +21,12 @@ def calculaSaldo(moneda):
     dic_to = dbManager.consultaUnaSQL(query_to) # diccionario con la suma de cantidad_to(moneda)
     dic_to.update(dic_from) # mete dic suma de cantidad_from(€) en dic suma de cantidad_to(moneda)
 
-    saldo = dic_to['cantidad_to_global'] - dic_to['cantidad_from_global']
+    if moneda == 'EUR':
+        saldo = dic_to['cantidad_from_global'] - dic_to['cantidad_to_global']
+    else:
+         saldo = dic_to['cantidad_to_global'] - dic_to['cantidad_from_global']
     
     return saldo 
-
-def calculaInvertido(moneda):
-    
-    query_from = f"SELECT ifnull(sum(cantidad_from), 0) as cantidad_from_global FROM movimientos WHERE moneda_from='{moneda}';"
-    dic_from = dbManager.consultaUnaSQL(query_from)
-    invertido = dic_from['cantidad_from_global']
-
-    return round(invertido,2)
     
 @app.route('/')
 def listaMovimientos(): 
@@ -105,43 +100,33 @@ def par(_from, _to, quantity = 1.0):
 @app.route('/api/v1/status')
 def status(): 
     
-    status = {'saldos':{}, 'invertido': {} , 'valor_criptos_en_euros':{}, 'valor_criptos_en_euros_global': {}, 'valor_actual': {}}
+    data = {'invertido': {} , 'valor_criptos_en_euros':{}, 'valor_actual': {}}
     
-    # SALDO: 
+    # INVERSIÓN: Inversión de € atrapada en criptos
 
-    for divisa in divisas: 
-        status['saldos'][divisa]=calculaSaldo(divisa)
-    
-    # INVERTIDO: 
+    data['invertido'] = calculaSaldo('EUR')
 
-    status['invertido'] = calculaInvertido('EUR')
-
-    # VALOR GLOBAL DE CRIPTOS EN EUROS: 
+    # VALOR ACTUAL: Valor que tengo de criptos en euros 
 
     valor_criptos_en_euros_global = 0 
-    for divisa in divisas: 
-        saldo=int(calculaSaldo(divisa))
+    for cripto in criptoMonedas: 
+        saldo=float(calculaSaldo(cripto))
         if saldo > 0:
-            url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={calculaSaldo(divisa)}&symbol={divisa}&convert={'EUR'}&CMC_PRO_API_KEY=f49776ff-0ede-431f-ae7d-bf19413c12b1"
+            url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={calculaSaldo(cripto)}&symbol={cripto}&convert={'EUR'}&CMC_PRO_API_KEY=f49776ff-0ede-431f-ae7d-bf19413c12b1"
             res = requests.get(url)
             dic_res = res.json()
             valor_cripto_en_euros = dic_res['data']['quote']['EUR']['price']
             
-            status['valor_criptos_en_euros'][divisa] = valor_cripto_en_euros
+            data['valor_criptos_en_euros'][cripto] = valor_cripto_en_euros
             
             valor_criptos_en_euros_global += round(valor_cripto_en_euros,2)
 
         else: 
-            status['valor_criptos_en_euros'][divisa] = 0
-        
-    status['valor_criptos_en_euros_global'] = round(valor_criptos_en_euros_global,2)
+            data['valor_criptos_en_euros'][cripto] = 0
     
-    # VALOR ACTUAL: 
-    
-    valor_actual = status['invertido'] + status['valor_criptos_en_euros_global'] + status['saldos']['EUR']
-    status['valor_actual'] = round(valor_actual, 2)
+    data['valor_actual'] = valor_criptos_en_euros_global
     
     try:
-        return jsonify({'status': 'success', 'data': status})
+        return jsonify({'status': 'success', 'data': data})
     except sqlite3.Error as e:
         return jsonify({'status': 'fail', 'mensaje': str(e)}) 
