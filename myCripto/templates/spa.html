@@ -15,7 +15,7 @@
         <h1>Control de movimientos</h1>
             <div class="lista-movimientos"> 
                 <div class="row" id="tabla">
-                    <table class="tabla-movimientos column">
+                    <table class="tabla-movimientos column column-offset-1">
                         <thead class="td">
                             <tr>
                                 <th>Fecha</th>
@@ -28,13 +28,19 @@
                         </thead>
                         <tbody></tbody>
                     </table>
-                    <div class="column column-20">
-                        <label for="invertido">Invertido (€):</label>
-                        <input type="text" name="invertido" id="invertido" value ="" readonly>
-                        <label for="valor_actual">Valor Actual (€):</label>
-                        <input type="text" name="valor_actual" id="valor_actual" value ="" readonly>
-                        <label for="resultado">Resultado (€):</label>
-                        <input type="text" name="resultado" id="resultado" value ="" style="color: #000000;" readonly>
+                    <div class="column column-33">
+                        <div class="style">
+                            <label for="invertido">Invertido:</label>
+                            <input type="text" name="invertido" id="invertido" value ="" readonly>
+                        </div>
+                        <div class="style">
+                            <label for="valor_actual">Valor:</label>
+                            <input type="text" name="valor_actual" id="valor_actual" value ="" readonly>
+                        </div>
+                        <div class="style">
+                            <label for="resultado">Resultado: </label>
+                            <input type="text" name="resultado" id="resultado" value ="" style="color: #000000;"  readonly>
+                        </div> 
                         <button id="actualizar" class="float-right">Actualizar</button>
                     </div>
                 </div>
@@ -47,53 +53,61 @@
             <div class="row" >
                 <input type="hidden" id="idMovimiento">
                 <div class="column column-25 column-offset-5">
-                    <label for="moneda_from">From:</label> 
-                    <select name="moneda_from" id="moneda_from" onchange="disableBtnTo()">
-                        <option value=""></option>
-                        <option value="EUR">EUR</option>
-                        <option value="BTC">BTC</option>
-                        <option value="ETH">ETH</option>
-                        <option value="LTC">LTC</option>
-                        <option value="BNB">BNB</option>
-                        <option value="EOS">EOS</option>
-                        <option value="XLM">XLM</option>
-                        <option value="TRX">TRX</option>
-                        <option value="XRP">XRP</option>
-                        <option value="BCH">BCH</option>
-                        <option value="USDT">USDT</option>
-                        <option value="BSV">BSV</option>
-                        <option value="ADA">ADA</option>
-                    </select>
+                    <div class="style">
+                        <label for="moneda_from">From:</label> 
+                        <select name="moneda_from" id="moneda_from" onchange="disableBtnTo()">
+                            <option value=""></option>
+                            <option value="EUR">EUR</option>
+                            <option value="BTC">BTC</option>
+                            <option value="ETH">ETH</option>
+                            <option value="LTC">LTC</option>
+                            <option value="BNB">BNB</option>
+                            <option value="EOS">EOS</option>
+                            <option value="XLM">XLM</option>
+                            <option value="TRX">TRX</option>
+                            <option value="XRP">XRP</option>
+                            <option value="BCH">BCH</option>
+                            <option value="USDT">USDT</option>
+                            <option value="BSV">BSV</option>
+                            <option value="ADA">ADA</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="column column-25">
-                    <label for="moneda_to">To:</label> 
-                    <select name="moneda_to" id="moneda_to" onchange="disableBtnFrom()">
-                        <option value=""></option>
-                        <option value="EUR">EUR</option>
-                        <option value="BTC">BTC</option>
-                        <option value="ETH">ETH</option>
-                        <option value="LTC">LTC</option>
-                        <option value="BNB">BNB</option>
-                        <option value="EOS">EOS</option>
-                        <option value="XLM">XLM</option>
-                        <option value="TRX">TRX</option>
-                        <option value="XRP">XRP</option>
-                        <option value="BCH">BCH</option>
-                        <option value="USDT">USDT</option>
-                        <option value="BSV">BSV</option>
-                        <option value="ADA">ADA</option>
-                    </select>
+                <div class="column column-25 ">
+                    <div class="style">
+                        <label for="moneda_to">To:</label> 
+                        <select name="moneda_to" id="moneda_to" onchange="disableBtnFrom()">
+                            <option value=""></option>
+                            <option value="EUR">EUR</option>
+                            <option value="BTC">BTC</option>
+                            <option value="ETH">ETH</option>
+                            <option value="LTC">LTC</option>
+                            <option value="BNB">BNB</option>
+                            <option value="EOS">EOS</option>
+                            <option value="XLM">XLM</option>
+                            <option value="TRX">TRX</option>
+                            <option value="XRP">XRP</option>
+                            <option value="BCH">BCH</option>
+                            <option value="USDT">USDT</option>
+                            <option value="BSV">BSV</option>
+                            <option value="ADA">ADA</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             <div class="row">
                 <div class="column column-25 column-offset-5">
-                    <label for="cantidad_from">Q:</label>
-                    <input type="number" name="cantidad_from" id="cantidad_from" step="any">
-                    <button id="calcular" >Calcular</button>
+                    <div class="style">
+                        <label for="cantidad_from">Cantidad:</label>
+                        <input type="text" name="cantidad_from" id="cantidad_from">     
+                </div>
+                <button id="calcular" class="float-right" >Calcular</button>
                 </div>
                 <div class="column column-25">
-                    <label for="cantidad_to">Q:</label> 
-                    <input type="text" name="cantidad_to" id="cantidad_to" value ="" readonly>
+                    <div class="style">
+                        <label for="cantidad_to">Cantidad:</label> 
+                        <input type="text" name="cantidad_to" id="cantidad_to" value ="" readonly>
+                    </div>
                     <button class="float-right" id="guardar" >Guardar</button>
                     <br>
                     <a href="/" class="float-right">Reset</a>

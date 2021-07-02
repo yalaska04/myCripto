@@ -12,7 +12,33 @@ br {
     margin-top: 1.8%; /* change this to whatever height you want it */
 }
 
-#tabla { 
-    overflow-y: scroll; margin-bottom: 12px;
+#form {
+    text-align:center;
+}
+label {
+    width: 150px;
+    display: inline-block;
+    text-align: right; 
+    height: 40px;
+    padding-right:10px;
+
+}
+
+.style {
+    display:flex; 
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: center;
+}
+
+.row .column.column-right {
+    margin-right: 0%;
+  }
+
+.tabla-movimientos {
+    overflow: scroll;
+    height: 300px;
+    width: 100%;
+    
 }
 

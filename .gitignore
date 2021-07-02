@@ -4,4 +4,3 @@ venv/
 data
 config.py
 .vscode
-migrations

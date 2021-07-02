@@ -20,21 +20,24 @@ def calculaSaldo(moneda):
     dic_from = dbManager.consultaUnaSQL(query_from) # diccioanrio con la suma de cantidad_from(moneda)
     dic_to = dbManager.consultaUnaSQL(query_to) # diccionario con la suma de cantidad_to(moneda)
     dic_to.update(dic_from) # mete dic suma de cantidad_from(€) en dic suma de cantidad_to(moneda)
-
-    if moneda == 'EUR':
-        saldo = dic_to['cantidad_from_global'] - dic_to['cantidad_to_global']
-    else:
-         saldo = dic_to['cantidad_to_global'] - dic_to['cantidad_from_global']
+   
+    saldo = dic_to['cantidad_to_global'] - dic_to['cantidad_from_global']
     
     return saldo 
-    
+
+def totalInvertido(moneda): 
+    query_from = f"SELECT ifnull(sum(cantidad_from), 0) as cantidad_from_global FROM movimientos WHERE moneda_from='{moneda}';"
+    dic_from = dbManager.consultaUnaSQL(query_from)
+    totalInvertido = dic_from['cantidad_from_global']
+    return totalInvertido
+
 @app.route('/')
 def listaMovimientos(): 
     return render_template('spa.html')
 
 @app.route('/api/v1/movimientos') # Ruta de las APIs
 def movimientosAPI():
-    query = "SELECT * FROM movimientos ORDER BY date;"
+    query = "SELECT * FROM movimientos ORDER BY id DESC;"
 
     try:
         lista = dbManager.consultaMuchasSQL(query)
@@ -50,11 +53,7 @@ def detalleMovimiento(id=None):
         if request.method in ('GET'): 
             movimiento = dbManager.consultaUnaSQL("SELECT * FROM movimientos WHERE id = ?", [id])
             if movimiento:
-                return jsonify({
-                    # fijamos el diccionario de salid
-                    "status": "success",
-                    "movimiento": movimiento
-                })
+                return jsonify({"status": "success", "movimiento": movimiento}), HTTPStatus.OK
             else: 
                 return jsonify({"status": "fail", "mensaje": "movimiento no encontrado"}), HTTPStatus.NOT_FOUND
         
@@ -70,7 +69,7 @@ def detalleMovimiento(id=None):
             
             if moneda_from != 'EUR':
                 if saldo < cantidad_from: 
-                    return jsonify({'status': 'fail', 'mensaje': 'Saldo insuficiente'})
+                    return jsonify({'status': 'fail', 'mensaje': f'Saldo de {moneda_from} insuficiente'})
             
             if moneda_from == moneda_to: 
                 return jsonify({'status': 'fail', 'mensaje': 'From y To deben ser distintos'})
@@ -81,52 +80,59 @@ def detalleMovimiento(id=None):
                 VALUES (:date, :time, :moneda_from, :cantidad_from, :moneda_to, :cantidad_to)
                 """, data)
             
-            dic_id = dbManager.consultaUnaSQL("SELECT  last_insert_rowid() as last_id;")
+            dic_id = dbManager.consultaUnaSQL("SELECT id  FROM movimientos ORDER BY id DESC LIMIT 1;")
         
-            return jsonify({"status": "success", "id": dic_id['last_id']}), HTTPStatus.CREATED
+            return jsonify({"status": "success", "id": dic_id['id']}), HTTPStatus.CREATED
 
     except sqlite3.Error as e: 
-        return jsonify({"status": "fail", "mensaje": "Error en base de datos: {}".format(e)}), HTTPStatus.BAD_REQUEST
+        return jsonify({"status": "fail", "mensaje": f"Error en base de datos: {e}"}), HTTPStatus.BAD_REQUEST
 
 
 @app.route('/api/v1/par/<_from>/<_to>/<quantity>')
 @app.route('/api/v1/par/<_from>/<_to>')
 def par(_from, _to, quantity = 1.0):
-    url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={quantity}&symbol={_from}&convert={_to}&CMC_PRO_API_KEY=f49776ff-0ede-431f-ae7d-bf19413c12b1"
-    res = requests.get(url)
-    return Response(res) # devuelve un json {"status":{...}, "data":{...}}
+    try:
+        if float(quantity) < 0: 
+            return  jsonify({"status": "fail", "mensaje": "Cantidad debe ser positiva"})
+
+        url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={quantity}&symbol={_from}&convert={_to}&CMC_PRO_API_KEY=f49776ff-0ede-431f-ae7d-bf19413c12b1"
+        res = requests.get(url)
+        return Response(res) # devuelve un json {"status":{...}, "data":{...}}
+    
+    except:
+        return jsonify({'status': 'fail', 'mensaje': "Error al conectar con la API"}), HTTPStatus.BAD_REQUEST
 
 
 @app.route('/api/v1/status')
 def status(): 
     
-    data = {'invertido': {} , 'valor_criptos_en_euros':{}, 'valor_actual': {}}
-    
-    # INVERSIÓN: Inversión de € atrapada en criptos
-
-    data['invertido'] = calculaSaldo('EUR')
-
-    # VALOR ACTUAL: Valor que tengo de criptos en euros 
-
-    valor_criptos_en_euros_global = 0 
-    for cripto in criptoMonedas: 
-        saldo=float(calculaSaldo(cripto))
-        if saldo > 0:
-            url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={calculaSaldo(cripto)}&symbol={cripto}&convert={'EUR'}&CMC_PRO_API_KEY=f49776ff-0ede-431f-ae7d-bf19413c12b1"
-            res = requests.get(url)
-            dic_res = res.json()
-            valor_cripto_en_euros = dic_res['data']['quote']['EUR']['price']
-            
-            data['valor_criptos_en_euros'][cripto] = valor_cripto_en_euros
-            
-            valor_criptos_en_euros_global += round(valor_cripto_en_euros,2)
-
-        else: 
-            data['valor_criptos_en_euros'][cripto] = 0
-    
-    data['valor_actual'] = valor_criptos_en_euros_global
-    
     try:
-        return jsonify({'status': 'success', 'data': data})
+        data = {'total_invetido': {} , 'valor_criptos_en_euros':{}, 'valor_actual': {}}
+
+        valor_criptos_en_euros_global = 0 
+        saldo_euros = calculaSaldo('EUR')
+        total_invertido_euros = totalInvertido('EUR')
+        
+        for cripto in criptoMonedas: 
+            saldo=float(calculaSaldo(cripto))
+
+            if saldo > 0:
+                url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={calculaSaldo(cripto)}&symbol={cripto}&convert={'EUR'}&CMC_PRO_API_KEY=f49776ff-0ede-431f-ae7d-bf19413c12b1"
+                res = requests.get(url)
+                dic_res = res.json()
+                valor_cripto_en_euros = dic_res['data']['quote']['EUR']['price']
+                
+                data['valor_criptos_en_euros'][cripto] = valor_cripto_en_euros
+                
+                valor_criptos_en_euros_global += round(valor_cripto_en_euros,2)
+
+            else: 
+                data['valor_criptos_en_euros'][cripto] = 0
+        
+        data['total_invetido'] = total_invertido_euros
+        data['valor_actual'] = total_invertido_euros + saldo_euros + valor_criptos_en_euros_global
+        
+        return jsonify({'status': 'success', 'data': data}), HTTPStatus.OK
+
     except sqlite3.Error as e:
-        return jsonify({'status': 'fail', 'mensaje': str(e)}) 
+        return jsonify({'status': 'fail', 'mensaje': str(e)}), HTTPStatus.BAD_REQUEST 
