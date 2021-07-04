@@ -4,8 +4,6 @@ Crear aplicación web que resgistre movimientos de criptomonedas
 
 ## Instalación 
 
----
-
 1. Crear entorno virtual y activarlo
 
 * Crear
@@ -63,7 +61,6 @@ sqlite3 <ruta al fichero puesto en config.py>
 ```
 
 ## Ejecutar en local 
----
 
 Simplemente escribir 
 
