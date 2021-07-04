@@ -1,3 +1,4 @@
+from os import error
 from myCripto import app
 from flask import render_template, jsonify, request, Response
 from myCripto.dataaccess import DBmanager
@@ -11,6 +12,7 @@ criptoMonedas = ['BTC', 'ETH', 'LTC', 'BNB', 'EOS', 'XLM',
              'TRX', 'XRP', 'BCH', 'USDT', 'BSV', 'ADA']
 
 dbManager = DBmanager(app.config.get('DATABASE'))
+ApiKey = app.config.get('APIKEY')
 
 def calculaSaldo(moneda): 
 
@@ -95,7 +97,7 @@ def par(_from, _to, quantity = 1.0):
         if float(quantity) < 0: 
             return  jsonify({"status": "fail", "mensaje": "Cantidad debe ser positiva"})
 
-        url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={quantity}&symbol={_from}&convert={_to}&CMC_PRO_API_KEY=f49776ff-0ede-431f-ae7d-bf19413c12b1"
+        url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={quantity}&symbol={_from}&convert={_to}&CMC_PRO_API_KEY={ApiKey}"
         res = requests.get(url)
         return Response(res) # devuelve un json {"status":{...}, "data":{...}}
     
@@ -117,15 +119,18 @@ def status():
             saldo=float(calculaSaldo(cripto))
 
             if saldo > 0:
-                url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={calculaSaldo(cripto)}&symbol={cripto}&convert={'EUR'}&CMC_PRO_API_KEY=f49776ff-0ede-431f-ae7d-bf19413c12b1"
+                url = f"https://pro-api.coinmarketcap.com/v1/tools/price-conversion?amount={calculaSaldo(cripto)}&symbol={cripto}&convert={'EUR'}&CMC_PRO_API_KEY={ApiKey}"
                 res = requests.get(url)
                 dic_res = res.json()
-                valor_cripto_en_euros = dic_res['data']['quote']['EUR']['price']
+                try:
+                    valor_cripto_en_euros = dic_res['data']['quote']['EUR']['price']
                 
-                data['valor_criptos_en_euros'][cripto] = valor_cripto_en_euros
+                    data['valor_criptos_en_euros'][cripto] = valor_cripto_en_euros
                 
-                valor_criptos_en_euros_global += round(valor_cripto_en_euros,2)
-
+                    valor_criptos_en_euros_global += round(valor_cripto_en_euros,2)
+                except:
+                    error = dic_res['status']['error_message']
+                    return jsonify({'status': 'fail', 'mensaje': error})
             else: 
                 data['valor_criptos_en_euros'][cripto] = 0
         

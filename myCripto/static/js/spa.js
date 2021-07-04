@@ -30,7 +30,7 @@ function gestionaRespuestaApiCoinMarket() {
         const respuesta = JSON.parse(this.responseText)
 
         if (respuesta.status.error_code !== 0) {
-            alert("Error en servidor: "+ respuesta.mensaje)
+            alert("Error en servidor: "+ respuesta.error_message)
             return
         }
         
@@ -92,30 +92,45 @@ function muestraMovimientos() { // Recibe la respuesta (URL) de llamadaAPI
     }
 }
 
-function validar(movimiento) {
-
-    if (!movimiento.moneda_from) {
-        alert("Divisa inicial obligatoria")
-        return false
-    }
-
-    if (!movimiento.moneda_to) {
-        alert("Divisa final obligatoria")
-        return false
-    }
-
-    if (!movimiento.cantidad_from) {
-        alert("Cantidad From obligatoria")
+function validar_calcular(movimiento) {
+    
+    if (isNaN(movimiento.cantidad_from)) { 
+        alert("Error: la cantidad ha de ser un número")
         return false
     }
 
     if (movimiento.cantidad_from <= 0) {
-        alert("La cantidad ha de ser positiva")
+        alert("Error: la cantidad ha de ser positiva")
+        return false
+    }
+
+    return true
+}
+
+function validar_guardar(movimiento) {
+
+    if (!movimiento.moneda_from) {
+        alert("Error: divisa inicial obligatoria")
+        return false
+    }
+
+    if (!movimiento.moneda_to) {
+        alert("Error: divisa final obligatoria")
+        return false
+    }
+
+    if (!movimiento.cantidad_from) {
+        alert("Error: cantidad From obligatoria")
+        return false
+    }
+
+    if (movimiento.cantidad_from <= 0) {
+        alert("Error: la cantidad ha de ser positiva")
         return false
     }
 
     if (!movimiento.cantidad_to) {
-        alert("Cantidad To obligatoria")
+        alert("Error: cantidad To obligatoria")
         return false
     }
 
@@ -164,7 +179,7 @@ function llamaApiCreaMovimiento(ev){
     // cojo los datos pintados en el formulario para transformarlo que envío al servidor
     const movimiento = capturaFormularioMovimiento() // nuevos movimientos guardado en la memoria de la página
 
-    if (!validar(movimiento)) { // validaciones
+    if (!validar_guardar(movimiento)) { // validaciones
         return
     }
 
@@ -180,6 +195,10 @@ function llamaApiCoinMarket(ev){
     ev.preventDefault() 
 
     const movimiento = capturaFormularioMovimiento() 
+
+    if (!validar_calcular(movimiento)) { // validaciones
+        return
+    }
 
     xhr.open('GET', `http://127.0.0.1:5000/api/v1/par/${movimiento.moneda_from}/${movimiento.moneda_to}/${movimiento.cantidad_from}`)
     xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
