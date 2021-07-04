@@ -47,7 +47,6 @@ def movimientosAPI():
     except sqlite3.Error as e:
         return jsonify({'status': 'fail', 'mensaje': str(e)}) # str(e) = error pasado a cadena
 
-
 @app.route('/api/v1/movimiento/<int:id>', methods=['GET'])
 @app.route('/api/v1/movimiento', methods=['POST'])
 def detalleMovimiento(id=None):
@@ -89,7 +88,6 @@ def detalleMovimiento(id=None):
     except sqlite3.Error as e: 
         return jsonify({"status": "fail", "mensaje": f"Error en base de datos: {e}"}), HTTPStatus.BAD_REQUEST
 
-
 @app.route('/api/v1/par/<_from>/<_to>/<quantity>')
 @app.route('/api/v1/par/<_from>/<_to>')
 def par(_from, _to, quantity = 1.0):
@@ -103,7 +101,6 @@ def par(_from, _to, quantity = 1.0):
     
     except:
         return jsonify({'status': 'fail', 'mensaje': "Error al conectar con la API"}), HTTPStatus.BAD_REQUEST
-
 
 @app.route('/api/v1/status')
 def status(): 
