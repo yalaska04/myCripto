@@ -24,7 +24,7 @@ Crear aplicación web que resgistre movimientos de criptomonedas
     - en Windows
 
     ```python
-    . venv/Scripts/activate
+     venv\Scripts\activate
     ```
 
 2. Instalar dependencias
